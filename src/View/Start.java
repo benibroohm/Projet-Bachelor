@@ -194,6 +194,7 @@ public class Start extends JFrame {
 		});
 		mnFichier.add(mntmNouveau);
 		
+		// A faire !!!
 		JMenuItem mntmEnregistrer = new JMenuItem("Enregistrer");
 		mnFichier.add(mntmEnregistrer);
 		
