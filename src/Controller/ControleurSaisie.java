@@ -1,5 +1,14 @@
 package Controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
@@ -139,34 +148,60 @@ public class ControleurSaisie {
 	}
 	
 	public void anonymize(ArrayList<Integer> list, int option) {
-		CustomModel model = (CustomModel) table.getModel();
-		Vector titre = (Vector) model.getDataVector().get(0);
-		model.removeRow(0);
-		Collections.shuffle(model.getDataVector());
-		if (option == 1) {
-			for (Integer i : list) {
-				for (int j = 0; j < model.getRowCount(); j++) {
-					Vector v = (Vector) model.getDataVector().elementAt(j);
-					String t1 = (String) titre.elementAt(i.intValue()) + j + 1;
-					v.set(i.intValue(), t1);
+		if (list.size() > 0) {
+			CustomModel model = (CustomModel) table.getModel();
+			Vector titre = (Vector) model.getDataVector().get(0);
+			model.removeRow(0);
+			Collections.shuffle(model.getDataVector());
+			if (option == 1) {
+				for (Integer i : list) {
+					for (int j = 0; j < model.getRowCount(); j++) {
+						Vector v = (Vector) model.getDataVector().elementAt(j);
+						String t1 = (String) titre.elementAt(i.intValue()) + j + 1;
+						v.set(i.intValue(), t1);
+					}
 				}
 			}
-		}
-		else if (option == 2) {
-			for (Integer i : list) {
-				for (int j = 0; j < model.getRowCount(); j++) {
-					Vector v = (Vector) model.getDataVector().elementAt(j);
-					v.set(i.intValue(), new String("*"));
+			else if (option == 2) {
+				for (Integer i : list) {
+					for (int j = 0; j < model.getRowCount(); j++) {
+						Vector v = (Vector) model.getDataVector().elementAt(j);
+						v.set(i.intValue(), new String("*"));
+					}
 				}
 			}
+			model.insertRow(0, titre);
+			model.fireTableDataChanged();
+			this.reorderIndex();
+			model.setColumnIdentifiers(titre);
+			
+			this.selected.clear();
+			model.fireTableDataChanged();
 		}
-		model.insertRow(0, titre);
-		model.fireTableDataChanged();
-		this.reorderIndex();
-		model.setColumnIdentifiers(titre);
 		
-		this.selected.clear();
-		model.fireTableDataChanged();
+	}
+	
+	public void open(File file) throws FileNotFoundException, IOException {
+		final ObjectInputStream in = new ObjectInputStream(
+		        new BufferedInputStream(new FileInputStream(file)));
+
+		    try {
+				final Vector dataFromFile = (Vector) in.readObject();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
+	public void save() {
+		final ObjectOutputStream out = new ObjectOutputStream(
+		        new BufferedOutputStream(new FileOutputStream(FILE_NAME)));
+
+		    try {
+		      out.writeObject(products);
+		    } finally {
+		      out.close();
+		    }
 	}
 	
 	public void launchAnonymousMethod(DefaultListModel<String> noms) {

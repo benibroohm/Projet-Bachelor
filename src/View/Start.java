@@ -38,7 +38,9 @@ public class Start extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private ControleurSaisie control;
 	public JScrollPane scrollPane;
+	private boolean saved;
 	public Start(ControleurSaisie controleur) {
+		this.saved = false;
 		URL iconURL = getClass().getResource("../Ressources/logo.jpg");
 		// iconURL is null when not found
 		ImageIcon icon = new ImageIcon(iconURL);
@@ -185,6 +187,7 @@ public class Start extends JFrame {
 		
 		JMenuItem mntmOuvrir = new JMenuItem("Ouvrir");
 		mnFichier.add(mntmOuvrir);
+		mntmOuvrir.addActionListener(new OpenL(this, control));
 		
 		JMenuItem mntmNouveau = new JMenuItem("Nouvelle feuille");
 		mntmNouveau.addActionListener(new ActionListener() {
@@ -200,6 +203,10 @@ public class Start extends JFrame {
 		
 		JMenuItem mntmEnregistrerSous = new JMenuItem("Enregistrer sous");
 		mnFichier.add(mntmEnregistrerSous);
+		mntmEnregistrerSous.addActionListener(new SaveL(this, control));
+		
+		if (!saved)
+			mntmEnregistrer.doClick();
 		
 		JMenuItem mntmQuitter = new JMenuItem("Quitter");
 		mnFichier.add(mntmQuitter);
@@ -249,5 +256,9 @@ public class Start extends JFrame {
 	
 	public void removeRows() {
 		this.control.removeRows();
+	}
+	
+	public void setSaved() {
+		this.saved = true;
 	}
 }
