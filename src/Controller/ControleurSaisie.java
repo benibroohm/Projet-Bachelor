@@ -1,24 +1,26 @@
 package Controller;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.DefaultListModel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import Model.CryptoException;
 import Model.CryptoUtils;
 import Model.CustomModel;
 import View.CheckListItem;
@@ -133,7 +135,7 @@ public class ControleurSaisie {
 		{
 			this.table.removeColumn(this.table.getColumnModel().getColumn(col));
 			for (int i = 0; i < table.getRowCount(); i++) {
-				Vector v = (Vector) model.getDataVector().elementAt(i);
+				Vector<?> v = (Vector<?>) model.getDataVector().elementAt(i);
 				v.removeElementAt(col);
 			}
 			
@@ -144,7 +146,7 @@ public class ControleurSaisie {
 	}
 	
 	public void launchColumnSelection() {
-		Vector row = (Vector) this.model.getDataVector().elementAt(0);
+		Vector<?> row = (Vector<?>) this.model.getDataVector().elementAt(0);
 		CheckListItem[] objets = new CheckListItem[this.getTable().getColumnCount()];
 		for (int i = 0; i < row.size(); i++) {
 			if (row.get(i) != null) {
@@ -158,13 +160,13 @@ public class ControleurSaisie {
 	public void anonymize(ArrayList<Integer> list, int option) {
 		if (list.size() > 0) {
 			CustomModel model = (CustomModel) table.getModel();
-			Vector titre = (Vector) model.getDataVector().get(0);
+			Vector<?> titre = (Vector<?>) model.getDataVector().get(0);
 			model.removeRow(0);
 			Collections.shuffle(model.getDataVector());
 			if (option == 1) {
 				for (Integer i : list) {
 					for (int j = 0; j < model.getRowCount(); j++) {
-						Vector v = (Vector) model.getDataVector().elementAt(j);
+						Vector<String> v = (Vector<String>) model.getDataVector().elementAt(j);
 						String t1 = (String) titre.elementAt(i.intValue()) + j + 1;
 						v.set(i.intValue(), t1);
 					}
@@ -173,7 +175,7 @@ public class ControleurSaisie {
 			else if (option == 2) {
 				for (Integer i : list) {
 					for (int j = 0; j < model.getRowCount(); j++) {
-						Vector v = (Vector) model.getDataVector().elementAt(j);
+						Vector<String> v = (Vector<String>) model.getDataVector().elementAt(j);
 						v.set(i.intValue(), new String("*"));
 					}
 				}
@@ -194,6 +196,7 @@ public class ControleurSaisie {
 		        new FileInputStream(dir.getText()+"/"+filename.getText()));
 
 		    try {
+				@SuppressWarnings("unchecked")
 				Vector<Vector<String>> data = (Vector<Vector<String>>) in.readObject();
 				in.close();
 				model.setDataVector(data, data.elementAt(0));
@@ -224,60 +227,41 @@ public class ControleurSaisie {
 			}
 	}
 	
-	public void saveEncrypted(String key) throws FileNotFoundException, IOException {
+	public void saveEncrypted(String key) throws FileNotFoundException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
 		
-		ObjectOutputStream out = new ObjectOutputStream(
-		        new FileOutputStream(dir.getText()+"/"+filename.getText()+".objet"));
-				
-		      try {
-		    	  out.writeObject(model.getDataVector());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		      try {
-				out.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		      File inputFile = new File(dir.getText()+"/"+filename.getText()+".objet");
-		      String title = dir.getText()+"/"+filename.getText()+".encrypted";
-		        File encryptedFile = new File(title);
-		         
-		        try {
-		            CryptoUtils.encrypt(key, inputFile, encryptedFile);
-		        } catch (CryptoException ex) {
-		            System.out.println(ex.getMessage());
-		            ex.printStackTrace();
-		        }
-		      inputFile.delete();
-
-	}
-	
-	public void openEncrypted(String key) throws FileNotFoundException, IOException {
-		File encrypt = new File(dir.getText()+"/"+filename.getText());
-		File decrypt = new File(dir.getText()+"/"+filename.getText()+".objet");
-		try {
-			CryptoUtils.decrypt(key, encrypt, decrypt);
-		} catch (CryptoException e) {
+		OutputStream baos = new FileOutputStream(dir.getText()+"/"+filename.getText()+".encrypted");
+	    try {
+			CryptoUtils.encryptO(key, model.getDataVector(), baos);
+		} catch (InvalidAlgorithmParameterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		final ObjectInputStream in = new ObjectInputStream(
-		        new FileInputStream(dir.getText()+"/"+filename.getText()));
-
-		    try {
-				Vector<Vector<String>> data = (Vector<Vector<String>>) in.readObject();
-				in.close();
-				model.setDataVector(data, data.elementAt(0));
-				this.setTable(new JTable(this.model));
-				this.fenetre.refreshUI();
-			} catch (ClassNotFoundException e) {
+	}
+	
+	public void openEncrypted(String key) throws FileNotFoundException, IOException {
+		InputStream inputStream = new FileInputStream(dir.getText()+"/"+filename.getText());
+		try {
+			Vector<Vector<String>> data = null;
+			try {
+				data = (Vector<Vector<String>>) CryptoUtils.decryptO(key, inputStream);
+			} catch (InvalidAlgorithmParameterException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    decrypt.delete();
+			model.setDataVector(data, data.elementAt(0));
+			this.setTable(new JTable(this.model));
+			this.fenetre.refreshUI();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		inputStream.close();
 	}
 	
 	public void launchAnonymousMethod(DefaultListModel<String> noms) {

@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -135,10 +136,7 @@ public class Start extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				control.addC(1);
-				System.out.println("Table control : " + control.getTable().getColumnCount());
 				refreshUI();
-				//updateTable(controleur.getTable());
-				System.out.println("Table fenetre : " + control.getTable().getColumnCount());
 			}
 		});
 		
@@ -213,9 +211,6 @@ public class Start extends JFrame {
 		JMenu mnDonnes = new JMenu("Donn\u00E9es");
 		menuBar.add(mnDonnes);
 		
-		JMenuItem mntmChiffer = new JMenuItem("Chiffer");
-		mnDonnes.add(mntmChiffer);
-		
 		JMenuItem mntmAnonymiser = new JMenuItem("Anonymiser");
 		mntmAnonymiser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -248,9 +243,8 @@ public class Start extends JFrame {
 		this.scrollPane.getViewport().revalidate();
 		this.scrollPane.revalidate();
 	
-		//CustomModel model = table.getModel();
-		//Vector titre = (Vector) model.getDataVector().get(0);
-		//model.setColumnIdentifiers(titre);
+		Vector titre = (Vector) control.getModel().getDataVector().get(0);
+		control.getModel().setColumnIdentifiers(titre);
 	}
 	
 	public void removeRows() {

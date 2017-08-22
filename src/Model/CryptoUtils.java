@@ -1,12 +1,13 @@
 package Model;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
@@ -14,57 +15,57 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SealedObject;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoUtils {
 	
 	private static final String ALGORITHM = "AES";
-    private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static byte[] key;
- 
-    public static void encrypt(String key, File inputFile, File outputFile)
-            throws CryptoException {
-        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
-    }
- 
-    public static void decrypt(String key, File inputFile, File outputFile)
-            throws CryptoException {
-        doCrypto(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
-    }
- 
-    private static void doCrypto(int cipherMode, String mkey, File inputFile,
-            File outputFile) throws CryptoException {
-        try {
-        	MessageDigest sha = null;
-        	key = mkey.getBytes("UTF-8");
-        	sha = MessageDigest.getInstance("SHA-1");
-        	key = sha.digest(key);
-        	key = Arrays.copyOf(key, 16); 
-        	
-        	for (int i = 0; i < key.length; i++)
-        		System.out.print(key[i]);
-        	System.out.println();
-            Key secretKey = new SecretKeySpec(key, ALGORITHM);
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-            cipher.init(cipherMode, secretKey);
-             
-            
-            FileInputStream inputStream = new FileInputStream(inputFile);
-            byte[] inputBytes = new byte[(int) inputFile.length()];
-            inputStream.read(inputBytes);
-             
-            byte[] outputBytes = cipher.doFinal(inputBytes);
-             
-            FileOutputStream outputStream = new FileOutputStream(outputFile);
-            outputStream.write(outputBytes);
-             
-            inputStream.close();
+    
+    public static void encryptO(String mkey, Serializable object, OutputStream ostream) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+         try {
+        	 key = mkey.getBytes("UTF-8");
+        	 key = Arrays.copyOf(key, 16);
+        	 SecretKeySpec secretKey = new SecretKeySpec(key, ALGORITHM);
+         	 Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+         	 cipher.init(Cipher.ENCRYPT_MODE, secretKey,
+         	        new IvParameterSpec(new byte[16]));
+         	 SealedObject sealedObject = new SealedObject(object, cipher);
+         	 ostream.flush();
+         	 
+            ObjectOutputStream outputStream = new ObjectOutputStream(ostream);
+            outputStream.writeObject(sealedObject);
+            outputStream.flush();
             outputStream.close();
-             
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException
-                | InvalidKeyException | BadPaddingException
-                | IllegalBlockSizeException | IOException ex) {
-            throw new CryptoException("Error encrypting/decrypting file", ex);
+		} catch (IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    public static Object decryptO(String mkey, InputStream istream) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException, InvalidAlgorithmParameterException {
+    	key = mkey.getBytes("UTF-8");
+   	 	key = Arrays.copyOf(key, 16);
+   	 	SecretKeySpec secretKey = new SecretKeySpec(key, ALGORITHM);
+   	 	Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+    	cipher.init(Cipher.DECRYPT_MODE, secretKey,
+    	        new IvParameterSpec(new byte[16]));
+
+    	ObjectInputStream inputStream = new ObjectInputStream(istream);
+        SealedObject sealedObject;
+        try {
+            sealedObject = (SealedObject) inputStream.readObject();
+            return sealedObject.getObject(cipher);
+        } catch (ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+            return null;
         }
     }
+ 
 }

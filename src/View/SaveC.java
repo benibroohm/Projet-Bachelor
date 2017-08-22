@@ -3,11 +3,8 @@ package View;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import Controller.ControleurSaisie;
 
@@ -26,7 +23,6 @@ public class SaveC implements ActionListener {
 			control.getFilename().setText(c.getSelectedFile().getName());
 			control.getDir().setText(c.getCurrentDirectory().toString());
 			control.launchKeyGet(1);
-			//((Start) st).setSaved();
 		}
 		if (rVal == JFileChooser.CANCEL_OPTION) {
 			control.getFilename().setText("You pressed cancel");

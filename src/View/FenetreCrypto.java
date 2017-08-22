@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -16,6 +17,8 @@ import Controller.ControleurSaisie;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public class FenetreCrypto extends JDialog {
 	/**
@@ -50,7 +53,18 @@ public class FenetreCrypto extends JDialog {
 			public void mouseClicked(MouseEvent arg0) {
 				try {
 					if (option == 1)
-						control.saveEncrypted(new String(passwordField.getPassword()));
+						try {
+							control.saveEncrypted(new String(passwordField.getPassword()));
+						} catch (InvalidKeyException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchAlgorithmException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchPaddingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					else if (option == 2)
 						control.openEncrypted(new String(passwordField.getPassword()));
 					dispose();
