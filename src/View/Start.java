@@ -197,16 +197,17 @@ public class Start extends JFrame {
 		});
 		mnFichier.add(mntmNouveau);
 		
-		// A faire !!!
-		JMenuItem mntmEnregistrer = new JMenuItem("Enregistrer");
-		mnFichier.add(mntmEnregistrer);
+		JMenuItem mntmOuvrirDocOriginal = new JMenuItem("Ouvrir doc. original");
+		mnFichier.add(mntmOuvrirDocOriginal);
+		mntmOuvrirDocOriginal.addActionListener(new OpenC(this, control));
+		
+		JMenuItem mntmEnregistrerDocOriginal = new JMenuItem("Enregistrer doc. original");
+		mnFichier.add(mntmEnregistrerDocOriginal);
+		mntmEnregistrerDocOriginal.addActionListener(new SaveC(this, control));
 		
 		JMenuItem mntmEnregistrerSous = new JMenuItem("Enregistrer sous");
 		mnFichier.add(mntmEnregistrerSous);
 		mntmEnregistrerSous.addActionListener(new SaveL(this, control));
-		
-		if (!saved)
-			mntmEnregistrer.doClick();
 		
 		JMenuItem mntmQuitter = new JMenuItem("Quitter");
 		mnFichier.add(mntmQuitter);

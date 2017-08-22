@@ -1,7 +1,5 @@
 package Controller;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,20 +7,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import Model.CryptoException;
+import Model.CryptoUtils;
 import Model.CustomModel;
 import View.CheckListItem;
 import View.EcranAnonymisation;
 import View.EcranChoixTableau;
 import View.EcranNombre;
 import View.EcranSelectionColonne;
+import View.FenetreCrypto;
 import View.Start;
 
 public class ControleurSaisie {
@@ -30,6 +34,7 @@ public class ControleurSaisie {
 	private CustomModel model;
 	private ArrayList<Integer> selected;
 	private Start fenetre;
+	private JTextField filename = new JTextField(), dir = new JTextField();
 	
 	public JTable getTable() {
 		return table;
@@ -76,6 +81,8 @@ public class ControleurSaisie {
 		Start fenetre = new Start(this);
 		this.fenetre = fenetre;
 		this.fenetre.setVisible(true);
+		dir.setEditable(false);
+	    filename.setEditable(false);
 	}
 	
 	public void addC(int n) {
@@ -129,6 +136,7 @@ public class ControleurSaisie {
 				Vector v = (Vector) model.getDataVector().elementAt(i);
 				v.removeElementAt(col);
 			}
+			
 			col = this.table.getSelectedColumn();
 		}
 		this.model.fireTableDataChanged();
@@ -181,27 +189,95 @@ public class ControleurSaisie {
 		
 	}
 	
-	public void open(File file) throws FileNotFoundException, IOException {
+	public void open() throws FileNotFoundException, IOException {
 		final ObjectInputStream in = new ObjectInputStream(
-		        new BufferedInputStream(new FileInputStream(file)));
+		        new FileInputStream(dir.getText()+"/"+filename.getText()));
 
 		    try {
-				final Vector dataFromFile = (Vector) in.readObject();
+				Vector<Vector<String>> data = (Vector<Vector<String>>) in.readObject();
+				in.close();
+				model.setDataVector(data, data.elementAt(0));
+				this.setTable(new JTable(this.model));
+				this.fenetre.refreshUI();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
 	
-	public void save() {
-		final ObjectOutputStream out = new ObjectOutputStream(
-		        new BufferedOutputStream(new FileOutputStream(FILE_NAME)));
+	public void save() throws FileNotFoundException, IOException {
+		
+		ObjectOutputStream out = new ObjectOutputStream(
+		        new FileOutputStream(dir.getText()+"/"+filename.getText()+".objet"));
+				
+		      try {
+		    	  out.writeObject(model.getDataVector());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      try {
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
+	public void saveEncrypted(String key) throws FileNotFoundException, IOException {
+		
+		ObjectOutputStream out = new ObjectOutputStream(
+		        new FileOutputStream(dir.getText()+"/"+filename.getText()+".objet"));
+				
+		      try {
+		    	  out.writeObject(model.getDataVector());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      try {
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      File inputFile = new File(dir.getText()+"/"+filename.getText()+".objet");
+		      String title = dir.getText()+"/"+filename.getText()+".encrypted";
+		        File encryptedFile = new File(title);
+		         
+		        try {
+		            CryptoUtils.encrypt(key, inputFile, encryptedFile);
+		        } catch (CryptoException ex) {
+		            System.out.println(ex.getMessage());
+		            ex.printStackTrace();
+		        }
+		      inputFile.delete();
+
+	}
+	
+	public void openEncrypted(String key) throws FileNotFoundException, IOException {
+		File encrypt = new File(dir.getText()+"/"+filename.getText());
+		File decrypt = new File(dir.getText()+"/"+filename.getText()+".objet");
+		try {
+			CryptoUtils.decrypt(key, encrypt, decrypt);
+		} catch (CryptoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		final ObjectInputStream in = new ObjectInputStream(
+		        new FileInputStream(dir.getText()+"/"+filename.getText()));
 
 		    try {
-		      out.writeObject(products);
-		    } finally {
-		      out.close();
-		    }
+				Vector<Vector<String>> data = (Vector<Vector<String>>) in.readObject();
+				in.close();
+				model.setDataVector(data, data.elementAt(0));
+				this.setTable(new JTable(this.model));
+				this.fenetre.refreshUI();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    decrypt.delete();
 	}
 	
 	public void launchAnonymousMethod(DefaultListModel<String> noms) {
@@ -231,5 +307,26 @@ public class ControleurSaisie {
 
 	public void setFenetre(Start fenetre) {
 		this.fenetre = fenetre;
+	}
+
+	public JTextField getFilename() {
+		return filename;
+	}
+
+	public void setFilename(JTextField filename) {
+		this.filename = filename;
+	}
+
+	public JTextField getDir() {
+		return dir;
+	}
+
+	public void setDir(JTextField dir) {
+		this.dir = dir;
+	}
+	
+	public void launchKeyGet(int option) {
+		FenetreCrypto crypt = new FenetreCrypto(this, option);
+		crypt.setVisible(true);
 	}
 }

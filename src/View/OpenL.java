@@ -6,14 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.swing.JTextField;
 
 import Controller.ControleurSaisie;
 
 public class OpenL implements ActionListener {
 
 	private Start st;
-	private JTextField filename = new JTextField(), dir = new JTextField();
 	private ControleurSaisie control;
 	
 	@Override
@@ -23,10 +21,11 @@ public class OpenL implements ActionListener {
 		// Demonstrate "Open" dialog:
 		int rVal = c.showOpenDialog(st);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
-			filename.setText(c.getSelectedFile().getName());
-			dir.setText(c.getCurrentDirectory().toString());
+			control.getFilename().setText(c.getSelectedFile().getName());
+			control.getDir().setText(c.getCurrentDirectory().toString());
+			
 			try {
-				control.open(c.getSelectedFile());
+				control.open();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -36,15 +35,13 @@ public class OpenL implements ActionListener {
 			}
 		}
 		if (rVal == JFileChooser.CANCEL_OPTION) {
-			filename.setText("You pressed cancel");
-			dir.setText("");
+			control.getFilename().setText("You pressed cancel");
+			control.getDir().setText("");
 		}
 	}
 	
 	public OpenL(Start st, ControleurSaisie control) {
 		this.st = st;
-		dir.setEditable(false);
-	    filename.setEditable(false);
 	    this.control = control;
 	}
 
