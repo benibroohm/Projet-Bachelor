@@ -32,7 +32,6 @@ public class SaveL implements ActionListener {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			st.setSaved();
 		}
 		if (rVal == JFileChooser.CANCEL_OPTION) {
 			control.getFilename().setText("You pressed cancel");

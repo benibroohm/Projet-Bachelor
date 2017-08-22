@@ -38,11 +38,9 @@ public class Start extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private ControleurSaisie control;
 	public JScrollPane scrollPane;
-	private boolean saved;
 	public Start(ControleurSaisie controleur) {
-		this.saved = false;
-		URL iconURL = getClass().getResource("../Ressources/logo.jpg");
-		// iconURL is null when not found
+		URL iconURL = getClass().getResource("/Ressources/logo.jpg");
+		//iconURL is null when not found
 		ImageIcon icon = new ImageIcon(iconURL);
 		setIconImage(icon.getImage());
 		setMinimumSize(new Dimension(800, 500));
@@ -257,9 +255,5 @@ public class Start extends JFrame {
 	
 	public void removeRows() {
 		this.control.removeRows();
-	}
-	
-	public void setSaved() {
-		this.saved = true;
 	}
 }
