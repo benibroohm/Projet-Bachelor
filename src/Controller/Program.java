@@ -1,14 +1,13 @@
 package Controller;
 
-import java.awt.EventQueue;
-
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class Program {
 
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
-		EventQueue.invokeLater(new Runnable()
+		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
 			public void run()

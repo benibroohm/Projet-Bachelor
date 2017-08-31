@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -262,6 +264,12 @@ public class ControleurSaisie {
 			e.printStackTrace();
 		}
 		inputStream.close();
+	}
+	
+	public void createProject() throws IOException {
+		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Originaux"));
+		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Encryptes"));
+		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Correspondances"));
 	}
 	
 	public void launchAnonymousMethod(DefaultListModel<String> noms) {

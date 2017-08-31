@@ -18,6 +18,7 @@ public class OpenL implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		JFileChooser c = new JFileChooser();
+		
 		// Demonstrate "Open" dialog:
 		int rVal = c.showOpenDialog(st);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
