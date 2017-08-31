@@ -197,6 +197,10 @@ public class Start extends JFrame {
 		mnFichier.add(mntmNouveauProjet);
 		mntmNouveauProjet.addActionListener(new SaveProject(this, control));
 		
+		JMenuItem mntmOuvrirProjet = new JMenuItem("Ouvrir projet");
+		mnFichier.add(mntmOuvrirProjet);
+		mntmOuvrirProjet.addActionListener(new OpenProject(this, control));
+		
 		JMenuItem mntmOuvrirDocOriginal = new JMenuItem("Ouvrir doc. original");
 		mnFichier.add(mntmOuvrirDocOriginal);
 		mntmOuvrirDocOriginal.addActionListener(new OpenC(this, control));

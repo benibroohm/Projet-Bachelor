@@ -3,6 +3,7 @@ package View;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 
@@ -16,9 +17,15 @@ public class SaveC implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		JFileChooser c = new JFileChooser();
+		JFileChooser c;
+		if (control.isPathSet()) {
+			c = new JFileChooser(new File(control.getFolderPath()+"/Originaux"));
+		}
+		else
+			c = new JFileChooser();
 		// Demonstrate "Save" dialog:
 		int rVal = c.showSaveDialog(this.st);
+		
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			control.getFilename().setText(c.getSelectedFile().getName());
 			control.getDir().setText(c.getCurrentDirectory().toString());

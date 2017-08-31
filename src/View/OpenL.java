@@ -2,6 +2,7 @@ package View;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -17,7 +18,13 @@ public class OpenL implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		JFileChooser c = new JFileChooser();
+		JFileChooser c = null;
+		if (control.isPathSet()) {
+			File f = new File(control.getFolderPath()+"/Anonymes");
+			c = new JFileChooser(new File(f.getAbsolutePath()));
+		}
+		else
+			c = new JFileChooser();
 		
 		// Demonstrate "Open" dialog:
 		int rVal = c.showOpenDialog(st);

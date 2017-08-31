@@ -2,6 +2,7 @@ package View;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -17,8 +18,13 @@ public class SaveL implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		JFileChooser c = new JFileChooser();
 		// Demonstrate "Save" dialog:
+		JFileChooser c;
+		if (control.isPathSet()) {
+			c = new JFileChooser(new File(control.getFolderPath()+"/Anonymes"));
+		}
+		else
+			c = new JFileChooser();
 		int rVal = c.showSaveDialog(this.st);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			control.getFilename().setText(c.getSelectedFile().getName());

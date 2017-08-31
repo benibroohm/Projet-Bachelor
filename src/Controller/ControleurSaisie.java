@@ -1,8 +1,11 @@
 package Controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -39,6 +42,8 @@ public class ControleurSaisie {
 	private ArrayList<Integer> selected;
 	private Start fenetre;
 	private JTextField filename = new JTextField(), dir = new JTextField();
+	private boolean pathSet;
+	private String folderPath;
 	
 	public JTable getTable() {
 		return table;
@@ -87,6 +92,7 @@ public class ControleurSaisie {
 		this.fenetre.setVisible(true);
 		dir.setEditable(false);
 	    filename.setEditable(false);
+	    this.pathSet = false;
 	}
 	
 	public void addC(int n) {
@@ -194,6 +200,7 @@ public class ControleurSaisie {
 	}
 	
 	public void open() throws FileNotFoundException, IOException {
+		this.setPathIfNot();
 		final ObjectInputStream in = new ObjectInputStream(
 		        new FileInputStream(dir.getText()+"/"+filename.getText()));
 
@@ -211,7 +218,7 @@ public class ControleurSaisie {
 	}
 	
 	public void save() throws FileNotFoundException, IOException {
-		
+		this.setPathIfNot();
 		ObjectOutputStream out = new ObjectOutputStream(
 		        new FileOutputStream(dir.getText()+"/"+filename.getText()+".objet"));
 				
@@ -230,7 +237,7 @@ public class ControleurSaisie {
 	}
 	
 	public void saveEncrypted(String key) throws FileNotFoundException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
-		
+		this.setPathIfNot();
 		OutputStream baos = new FileOutputStream(dir.getText()+"/"+filename.getText()+".encrypted");
 	    try {
 			CryptoUtils.encryptO(key, model.getDataVector(), baos);
@@ -241,6 +248,7 @@ public class ControleurSaisie {
 	}
 	
 	public void openEncrypted(String key) throws FileNotFoundException, IOException {
+		this.setPathIfNot();
 		InputStream inputStream = new FileInputStream(dir.getText()+"/"+filename.getText());
 		try {
 			Vector<Vector<String>> data = null;
@@ -267,9 +275,21 @@ public class ControleurSaisie {
 	}
 	
 	public void createProject() throws IOException {
+		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Anonymes"));
 		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Originaux"));
-		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Encryptes"));
 		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Correspondances"));
+		File file = new File(dir.getText()+"/"+filename.getText()+"/"+filename.getText()+".info");
+		
+		FileWriter writer = new FileWriter(file);
+		writer.write(dir.getText()+"/"+filename.getText());
+		writer.close();
+		this.setFolderPath(dir.getText()+"/"+filename.getText());
+		this.pathSet = true;
+	}
+	
+	public void openProject() throws IOException {
+		this.setFolderPath(dir.getText());
+		this.pathSet = true;
 	}
 	
 	public void launchAnonymousMethod(DefaultListModel<String> noms) {
@@ -320,5 +340,28 @@ public class ControleurSaisie {
 	public void launchKeyGet(int option) {
 		FenetreCrypto crypt = new FenetreCrypto(this, option);
 		crypt.setVisible(true);
+	}
+
+	public boolean isPathSet() {
+		return pathSet;
+	}
+
+	public void setPathSet(boolean pathSet) {
+		this.pathSet = pathSet;
+	}
+
+	public String getFolderPath() {
+		return folderPath;
+	}
+
+	public void setFolderPath(String folderPath) {
+		this.folderPath = folderPath;
+	}
+	
+	public void setPathIfNot() {
+		if (!this.pathSet) {
+			this.setFolderPath(dir.getText()+"/"+filename.getText());
+			this.pathSet = true;
+		}
 	}
 }

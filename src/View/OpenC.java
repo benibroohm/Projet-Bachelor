@@ -2,6 +2,7 @@ package View;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 
@@ -15,8 +16,12 @@ public class OpenC implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		JFileChooser c = new JFileChooser();
-		
+		JFileChooser c;
+		if (control.isPathSet()) {
+			c = new JFileChooser(new File(control.getFolderPath()+"/Originaux"));
+		}
+		else
+			c = new JFileChooser();
 		// Demonstrate "Open" dialog:
 		int rVal = c.showOpenDialog(st);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
