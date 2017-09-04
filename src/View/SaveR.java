@@ -1,35 +1,35 @@
 package View;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 
 import Controller.ControleurSaisie;
 
-public class OpenProject implements ActionListener {
+public class SaveR implements ActionListener {
 
-	private Start st;
+	private Component st;
 	private ControleurSaisie control;
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		JFileChooser c = new JFileChooser();
+		JFileChooser c;
+		if (control.isPathSet()) {
+			c = new JFileChooser(new File(control.getFolderPath()+"/Correspondances"));
+		}
+		else
+			c = new JFileChooser();
+		// Demonstrate "Save" dialog:
+		int rVal = c.showSaveDialog(this.st);
 		
-		// Demonstrate "Open" dialog:
-		int rVal = c.showOpenDialog(st);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			control.getFilename().setText(c.getSelectedFile().getName());
 			control.getDir().setText(c.getCurrentDirectory().toString());
-			
-			try {
-				control.openProject();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			control.launchKeyGet(3);
 		}
 		if (rVal == JFileChooser.CANCEL_OPTION) {
 			control.getFilename().setText("You pressed cancel");
@@ -37,8 +37,8 @@ public class OpenProject implements ActionListener {
 		}
 	}
 	
-	public OpenProject(Start st, ControleurSaisie control) {
-		this.st = st;
+	public SaveR(Component st, ControleurSaisie control) {
+		this.st = (Start) st;
 	    this.control = control;
 	}
 

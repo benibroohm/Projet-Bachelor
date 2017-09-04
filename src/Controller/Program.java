@@ -20,7 +20,7 @@ public class Program {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				ControleurSaisie saisie = new ControleurSaisie();
+				new ControleurSaisie();
 			}
 		});
 	}

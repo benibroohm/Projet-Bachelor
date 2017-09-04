@@ -5,7 +5,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFileChooser;
 
 import Controller.ControleurSaisie;
@@ -30,7 +33,23 @@ public class SaveL implements ActionListener {
 			control.getFilename().setText(c.getSelectedFile().getName());
 			control.getDir().setText(c.getCurrentDirectory().toString());
 			try {
-				control.save();
+				try {
+					try {
+						control.save();
+					} catch (InvalidKeyException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (NoSuchAlgorithmException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (NoSuchPaddingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -2,13 +2,13 @@ package View;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 
 import Controller.ControleurSaisie;
 
-public class OpenProject implements ActionListener {
+public class OpenR implements ActionListener {
 
 	private Start st;
 	private ControleurSaisie control;
@@ -16,20 +16,18 @@ public class OpenProject implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		JFileChooser c = new JFileChooser();
-		
+		JFileChooser c;
+		if (control.isPathSet()) {
+			c = new JFileChooser(new File(control.getFolderPath()+"/Correspondances"));
+		}
+		else
+			c = new JFileChooser();
 		// Demonstrate "Open" dialog:
 		int rVal = c.showOpenDialog(st);
 		if (rVal == JFileChooser.APPROVE_OPTION) {
 			control.getFilename().setText(c.getSelectedFile().getName());
 			control.getDir().setText(c.getCurrentDirectory().toString());
-			
-			try {
-				control.openProject();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			control.launchKeyGet(4);
 		}
 		if (rVal == JFileChooser.CANCEL_OPTION) {
 			control.getFilename().setText("You pressed cancel");
@@ -37,7 +35,7 @@ public class OpenProject implements ActionListener {
 		}
 	}
 	
-	public OpenProject(Start st, ControleurSaisie control) {
+	public OpenR(Start st, ControleurSaisie control) {
 		this.st = st;
 	    this.control = control;
 	}

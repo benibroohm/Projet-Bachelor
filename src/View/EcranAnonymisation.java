@@ -49,6 +49,7 @@ public class EcranAnonymisation extends JDialog {
 		rdbtnPseudonymisation.setSelected(true);
 		springLayout.putConstraint(SpringLayout.NORTH, rdbtnPseudonymisation, 22, SpringLayout.SOUTH, scrollPane);
 		
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		JList list = new JList(noms);
 		scrollPane.setViewportView(list);
 		springLayout.putConstraint(SpringLayout.WEST, rdbtnPseudonymisation, 68, SpringLayout.WEST, getContentPane());

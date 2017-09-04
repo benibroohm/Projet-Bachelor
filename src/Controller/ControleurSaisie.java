@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +21,7 @@ import java.util.Vector;
 
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -31,6 +31,7 @@ import Model.CustomModel;
 import View.CheckListItem;
 import View.EcranAnonymisation;
 import View.EcranChoixTableau;
+import View.EcranCorrespondances;
 import View.EcranNombre;
 import View.EcranSelectionColonne;
 import View.FenetreCrypto;
@@ -44,7 +45,9 @@ public class ControleurSaisie {
 	private JTextField filename = new JTextField(), dir = new JTextField();
 	private boolean pathSet;
 	private String folderPath;
-	
+	private Vector<Vector<String>> link;
+	private boolean isPseudo;
+
 	public JTable getTable() {
 		return table;
 	}
@@ -52,7 +55,7 @@ public class ControleurSaisie {
 	public void setTable(JTable table) {
 		this.table = table;
 		table.setAutoCreateColumnsFromModel(false);
-    	table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setColumnSelectionAllowed(true);
 		table.setCellSelectionEnabled(true);
 		table.setRowSelectionAllowed(true);
@@ -61,42 +64,42 @@ public class ControleurSaisie {
 
 	public void createTableau(int nc, int nl) {
 		String[] title = new String[nc];
-    	for (int i = 0; i < nc; i++) {
-    		int j = i+1;
-    		title[i] = "C" + j;
-    	}
-    	this.model = new CustomModel(nl+1, title.length);
-    	this.model.setColumnIdentifiers(title);
-    	
-    	this.model.setValueAt("Ligne", 0, 0);
-    	for (int i = 1; i < nl+1; i++) {
-    		model.setValueAt(new Integer(i).intValue(), i, 0);
-    	}
-    	this.setTable(new JTable(model));
+		for (int i = 0; i < nc; i++) {
+			int j = i+1;
+			title[i] = "C" + j;
+		}
+		this.model = new CustomModel(nl+1, title.length);
+		this.model.setColumnIdentifiers(title);
+
+		this.model.setValueAt("Ligne", 0, 0);
+		for (int i = 1; i < nl+1; i++) {
+			model.setValueAt(new Integer(i).intValue(), i, 0);
+		}
+		this.setTable(new JTable(model));
 	}
-	
+
 	public void launchChoice() {
 		EcranChoixTableau choice = new EcranChoixTableau(this);
 		choice.setVisible(true);
 	}
-	
+
 	public void launchAjout(String choix) {
 		EcranNombre nombre = new EcranNombre(this, choix);
 		nombre.setVisible(true);
 	}
-	
+
 	public ControleurSaisie() {
 		this.createTableau(1, 1);
 		Start fenetre = new Start(this);
 		this.fenetre = fenetre;
 		this.fenetre.setVisible(true);
 		dir.setEditable(false);
-	    filename.setEditable(false);
-	    this.pathSet = false;
+		filename.setEditable(false);
+		this.pathSet = false;
 	}
-	
+
 	public void addC(int n) {
-		
+
 		int nc = this.model.getColumnCount();
 		for (int i = 0; i < n; i++) {
 			int num = nc+i+1;
@@ -105,40 +108,40 @@ public class ControleurSaisie {
 		this.setTable(new JTable(this.model));
 		this.fenetre.refreshUI();
 	}
-	
+
 	public void addL(int l) {
 		for (int i = 0; i < l; i++) {
-    		Object[] row = new Object[this.table.getColumnCount()];
-    		row[0] = this.table.getRowCount();
-        	for (int j = 1; j < this.table.getColumnCount(); j++)
-        		row[j] = null;
-        	this.model.addRow(row);
-    	}
+			Object[] row = new Object[this.table.getColumnCount()];
+			row[0] = this.table.getRowCount();
+			for (int j = 1; j < this.table.getColumnCount(); j++)
+				row[j] = null;
+			this.model.addRow(row);
+		}
 		this.fenetre.refreshUI();
 	}
-	
+
 	public void reorderIndex() {
-    	this.getTable().setValueAt("Ligne", 0, 0);
-    	for (int i = 1; i < this.getTable().getRowCount(); i++) {
-    		this.getTable().setValueAt(i, i, 0);
-    	}
-    }
+		this.getTable().setValueAt("Ligne", 0, 0);
+		for (int i = 1; i < this.getTable().getRowCount(); i++) {
+			this.getTable().setValueAt(i, i, 0);
+		}
+	}
 
 	public void removeRows() {
 		// TODO Auto-generated method stub
 		CustomModel model = this.model;
 		int row = this.table.getSelectedRow();
-        while (row != -1)
-        {
-            model.removeRow(row);
-            row = this.table.getSelectedRow();
-        }
+		while (row != -1)
+		{
+			model.removeRow(row);
+			row = this.table.getSelectedRow();
+		}
 		this.fenetre.refreshUI();
 	}
-	
+
 	public void removeColumns() {
 		int col = this.table.getSelectedColumn();
-		
+
 		while (col != -1)
 		{
 			this.table.removeColumn(this.table.getColumnModel().getColumn(col));
@@ -146,13 +149,13 @@ public class ControleurSaisie {
 				Vector<?> v = (Vector<?>) model.getDataVector().elementAt(i);
 				v.removeElementAt(col);
 			}
-			
+
 			col = this.table.getSelectedColumn();
 		}
 		this.model.fireTableDataChanged();
 		this.fenetre.refreshUI();
 	}
-	
+
 	public void launchColumnSelection() {
 		Vector<?> row = (Vector<?>) this.model.getDataVector().elementAt(0);
 		CheckListItem[] objets = new CheckListItem[this.getTable().getColumnCount()];
@@ -164,21 +167,36 @@ public class ControleurSaisie {
 		EcranSelectionColonne choice = new EcranSelectionColonne(objets, this);
 		choice.setVisible(true);
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public void anonymize(ArrayList<Integer> list, int option) {
 		if (list.size() > 0) {
 			CustomModel model = (CustomModel) table.getModel();
-			Vector<?> titre = (Vector<?>) model.getDataVector().get(0);
+			Vector<String> titre = (Vector<String>) model.getDataVector().get(0);
 			model.removeRow(0);
 			Collections.shuffle(model.getDataVector());
 			if (option == 1) {
+				Vector<Vector<String>> link = new Vector<Vector<String>>(model.getRowCount());
+				for (int j = 0; j < model.getRowCount(); j++)
+					link.add(j, new Vector<String>(list.size()));
+				int k = 0;
 				for (Integer i : list) {
 					for (int j = 0; j < model.getRowCount(); j++) {
 						Vector<String> v = (Vector<String>) model.getDataVector().elementAt(j);
-						String t1 = (String) titre.elementAt(i.intValue()) + j + 1;
+						String t1 = (String) titre.elementAt(i.intValue()) + "#" + new Integer(j + 1).toString();
+						Vector<String> vl = (Vector<String>) link.elementAt(j);
+						String toSet = v.get(i) + ":" + t1;
+						vl.add(k, toSet);
 						v.set(i.intValue(), t1);
 					}
+					k += 1;
 				}
+				Vector<String> v = new Vector<String>(list.size());
+				for (Integer i : list)
+					v.add(titre.get(i));
+				link.add(0, v);
+				this.link = link;
+				this.setPseudo(true);
 			}
 			else if (option == 2) {
 				for (Integer i : list) {
@@ -187,66 +205,74 @@ public class ControleurSaisie {
 						v.set(i.intValue(), new String("*"));
 					}
 				}
+				this.setPseudo(false);
 			}
 			model.insertRow(0, titre);
 			model.fireTableDataChanged();
 			this.reorderIndex();
 			model.setColumnIdentifiers(titre);
-			
+
 			this.selected.clear();
 			model.fireTableDataChanged();
 		}
-		
+
 	}
-	
+
 	public void open() throws FileNotFoundException, IOException {
 		this.setPathIfNot();
 		final ObjectInputStream in = new ObjectInputStream(
-		        new FileInputStream(dir.getText()+"/"+filename.getText()));
+				new FileInputStream(dir.getText()+"/"+filename.getText()));
 
-		    try {
-				@SuppressWarnings("unchecked")
-				Vector<Vector<String>> data = (Vector<Vector<String>>) in.readObject();
-				in.close();
-				model.setDataVector(data, data.elementAt(0));
-				this.setTable(new JTable(this.model));
-				this.fenetre.refreshUI();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			@SuppressWarnings("unchecked")
+			Vector<Vector<String>> data = (Vector<Vector<String>>) in.readObject();
+			in.close();
+			model.setDataVector(data, data.elementAt(0));
+			this.setTable(new JTable(this.model));
+			this.fenetre.refreshUI();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	public void save() throws FileNotFoundException, IOException {
+
+	public void save() throws FileNotFoundException, IOException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
 		this.setPathIfNot();
+		String fname = new String(dir.getText()+"/"+filename.getText());
+		if (!fname.endsWith(".objet"))
+			fname = fname.concat(".objet");
 		ObjectOutputStream out = new ObjectOutputStream(
-		        new FileOutputStream(dir.getText()+"/"+filename.getText()+".objet"));
-				
-		      try {
-		    	  out.writeObject(model.getDataVector());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		      try {
-				out.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				new FileOutputStream(fname));
+
+		try {
+			out.writeObject(model.getDataVector());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 	public void saveEncrypted(String key) throws FileNotFoundException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
 		this.setPathIfNot();
-		OutputStream baos = new FileOutputStream(dir.getText()+"/"+filename.getText()+".encrypted");
-	    try {
+		String fname = new String(dir.getText()+"/"+filename.getText());
+		if (!fname.endsWith(".encrypted"))
+			fname = fname.concat(".encrypted");
+		OutputStream baos = new FileOutputStream(fname);
+		try {
 			CryptoUtils.encryptO(key, model.getDataVector(), baos);
 		} catch (InvalidAlgorithmParameterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public void openEncrypted(String key) throws FileNotFoundException, IOException {
 		this.setPathIfNot();
 		InputStream inputStream = new FileInputStream(dir.getText()+"/"+filename.getText());
@@ -273,34 +299,47 @@ public class ControleurSaisie {
 		}
 		inputStream.close();
 	}
-	
+
 	public void createProject() throws IOException {
 		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Anonymes"));
 		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Originaux"));
 		Files.createDirectories(Paths.get(dir.getText()+"/"+filename.getText()+"/Correspondances"));
 		File file = new File(dir.getText()+"/"+filename.getText()+"/"+filename.getText()+".info");
-		
+
 		FileWriter writer = new FileWriter(file);
 		writer.write(dir.getText()+"/"+filename.getText());
 		writer.close();
 		this.setFolderPath(dir.getText()+"/"+filename.getText());
 		this.pathSet = true;
 	}
-	
+
 	public void openProject() throws IOException {
 		this.setFolderPath(dir.getText());
 		this.pathSet = true;
+
+		JFileChooser c = new JFileChooser(new File(this.getFolderPath()+"/Originaux"));
+		// Demonstrate "Open" dialog:
+		int rVal = c.showOpenDialog(this.fenetre);
+		if (rVal == JFileChooser.APPROVE_OPTION) {
+			this.getFilename().setText(c.getSelectedFile().getName());
+			this.getDir().setText(c.getCurrentDirectory().toString());
+			this.launchKeyGet(2);
+		}
+		if (rVal == JFileChooser.CANCEL_OPTION) {
+			this.getFilename().setText("You pressed cancel");
+			this.getDir().setText("");
+		}
 	}
-	
+
 	public void launchAnonymousMethod(DefaultListModel<String> noms) {
 		EcranAnonymisation anonyme = new EcranAnonymisation(noms, this);
 		anonyme.setVisible(true);
 	}
-	
+
 	public ArrayList<Integer> getSelected() {
 		return selected;
 	}
-	
+
 	public void setSelected(ArrayList<Integer> selected) {
 		this.selected = selected;
 	}
@@ -336,7 +375,7 @@ public class ControleurSaisie {
 	public void setDir(JTextField dir) {
 		this.dir = dir;
 	}
-	
+
 	public void launchKeyGet(int option) {
 		FenetreCrypto crypt = new FenetreCrypto(this, option);
 		crypt.setVisible(true);
@@ -357,11 +396,65 @@ public class ControleurSaisie {
 	public void setFolderPath(String folderPath) {
 		this.folderPath = folderPath;
 	}
-	
+
 	public void setPathIfNot() {
 		if (!this.pathSet) {
-			this.setFolderPath(dir.getText()+"/"+filename.getText());
+			this.setFolderPath(dir.getText()+"/");
 			this.pathSet = true;
 		}
+	}
+
+	public boolean isPseudo() {
+		return isPseudo;
+	}
+
+	public void setPseudo(boolean isPseudo) {
+		this.isPseudo = isPseudo;
+	}
+
+	public void saveLink(String string) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, FileNotFoundException {
+		// TODO Auto-generated method stub
+
+		if (this.isPseudo()) {
+			String fname = new String(dir.getText()+"/"+filename.getText());
+			if (!fname.endsWith(".link"))
+				fname = fname.concat(".link");
+
+			OutputStream baos = new FileOutputStream(fname);
+			try {
+				CryptoUtils.encryptO(string, link, baos);
+			} catch (InvalidAlgorithmParameterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void openLink(String key) throws IOException {
+		this.setPathIfNot();
+		InputStream inputStream = new FileInputStream(dir.getText()+"/"+filename.getText());
+		Vector<Vector<String>> data = null;
+		try {
+			data = (Vector<Vector<String>>) CryptoUtils.decryptO(key, inputStream);
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidAlgorithmParameterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		inputStream.close();
+		EcranCorrespondances ec = new EcranCorrespondances(data);
+		ec.setVisible(true);
 	}
 }

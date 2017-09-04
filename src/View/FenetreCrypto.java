@@ -3,6 +3,11 @@ package View;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
@@ -14,11 +19,6 @@ import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 
 import Controller.ControleurSaisie;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 public class FenetreCrypto extends JDialog {
 	/**
@@ -31,7 +31,7 @@ public class FenetreCrypto extends JDialog {
 		setModal(true);
 		setTitle("Crypter");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setSize(new Dimension(516, 256));
+		setSize(new Dimension(516, 300));
 		setLocationRelativeTo(null);
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
@@ -52,6 +52,7 @@ public class FenetreCrypto extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
+					dispose();
 					if (option == 1)
 						try {
 							control.saveEncrypted(new String(passwordField.getPassword()));
@@ -67,7 +68,23 @@ public class FenetreCrypto extends JDialog {
 						}
 					else if (option == 2)
 						control.openEncrypted(new String(passwordField.getPassword()));
-					dispose();
+					else if (option == 3) {
+						try {
+							control.saveLink(new String(passwordField.getPassword()));
+						} catch (InvalidKeyException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchAlgorithmException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchPaddingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					else if (option == 4)
+						control.openLink(new String(passwordField.getPassword()));
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -81,12 +98,12 @@ public class FenetreCrypto extends JDialog {
 		
 		JTextArea txtrNbVous = new JTextArea();
 		springLayout.putConstraint(SpringLayout.NORTH, txtrNbVous, 25, SpringLayout.SOUTH, passwordField);
-		springLayout.putConstraint(SpringLayout.SOUTH, txtrNbVous, -37, SpringLayout.NORTH, btnOk);
+		springLayout.putConstraint(SpringLayout.SOUTH, txtrNbVous, -18, SpringLayout.NORTH, btnOk);
 		txtrNbVous.setBackground(Color.LIGHT_GRAY);
 		springLayout.putConstraint(SpringLayout.WEST, txtrNbVous, 0, SpringLayout.WEST, lblEntrerLeMot);
 		springLayout.putConstraint(SpringLayout.EAST, txtrNbVous, -32, SpringLayout.EAST, getContentPane());
 		txtrNbVous.setFont(new Font("Arial Black", Font.ITALIC, 11));
-		txtrNbVous.setText("N.B : Vous devez crypter le fichier contenant\r\nles donn\u00E9es initiales avant d'appliquer l'anonymisation.");
+		txtrNbVous.setText("N.B : Vous devez crypter le fichier contenant\r\nles donn\u00E9es initiales avant d'appliquer l'anonymisation.\r\n\r\nSi vous enregistrez les correspondances, veuillez utiliser\r\nla pseudonymisation uniquement.");
 		getContentPane().add(txtrNbVous);
 	}
 }
