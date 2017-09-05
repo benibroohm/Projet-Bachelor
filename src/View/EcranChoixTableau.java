@@ -1,8 +1,6 @@
 package View;
 
 import java.awt.Dimension;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -15,9 +13,15 @@ import javax.swing.SpringLayout;
 
 import Controller.ControleurSaisie;
 
+/**
+ * Classe qui présente une interface pour le choix des lignes/colonnes à ajouter.
+ * 
+ * @author Beni Broohm
+ *
+ */
 public class EcranChoixTableau extends JDialog {
 	/**
-	 * 
+	 * Par défaut, on ajoute une ligne et une colonne si l'utilisateur n'entre rien.
 	 */
 	private static final long serialVersionUID = 1L;
 	private int nc = 1;
@@ -57,38 +61,17 @@ public class EcranChoixTableau extends JDialog {
 		getContentPane().add(spinner_1);
 		
 		JButton btnNewButton = new JButton("Cr\u00E9er");
-		btnNewButton.setMnemonic(KeyEvent.VK_ENTER);
-		spinner_1.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					nc = ((Integer) spinner.getValue()).intValue();
-					nl = ((Integer) spinner_1.getValue()).intValue();
-					control.createTableau(nc, nl);
-					control.getFenetre().refreshUI();
-					dispose();
-				}	
-			}
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					nc = ((Integer) spinner.getValue()).intValue();
-					nl = ((Integer) spinner_1.getValue()).intValue();
-					control.createTableau(nc, nl);
-					control.getFenetre().refreshUI();
-					dispose();
-				}
-			}
-		});
+		
 		springLayout.putConstraint(SpringLayout.NORTH, btnNewButton, 41, SpringLayout.SOUTH, lblEntrerLeNombres);
 		springLayout.putConstraint(SpringLayout.WEST, btnNewButton, 172, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, btnNewButton, 287, SpringLayout.WEST, getContentPane());
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				// On prend les entrées du spinner.
 				nc = ((Integer) spinner.getValue()).intValue();
 				nl = ((Integer) spinner_1.getValue()).intValue();
-				control.createTableau(nc+1, nl);
+				control.createTableau(nc+1, nl); // On crée notre tableau
 				control.getFenetre().refreshUI();
 				dispose();
 			}

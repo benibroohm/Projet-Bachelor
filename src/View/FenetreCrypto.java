@@ -57,14 +57,14 @@ public class FenetreCrypto extends JDialog {
 						try {
 							control.saveEncrypted(new String(passwordField.getPassword()));
 						} catch (InvalidKeyException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							new EcranErreur(e.getMessage()).setVisible(true);
+							return;
 						} catch (NoSuchAlgorithmException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							new EcranErreur(e.getMessage()).setVisible(true);
+							return;
 						} catch (NoSuchPaddingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							new EcranErreur(e.getMessage()).setVisible(true);
+							return;
 						}
 					else if (option == 2)
 						control.openEncrypted(new String(passwordField.getPassword()));
@@ -72,19 +72,19 @@ public class FenetreCrypto extends JDialog {
 						try {
 							control.saveLink(new String(passwordField.getPassword()));
 						} catch (NoSuchAlgorithmException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							new EcranErreur(e.getMessage()).setVisible(true);
+							return;
 						} catch (NoSuchPaddingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							new EcranErreur(e.getMessage()).setVisible(true);
+							return;
 						}
 					}
 					else if (option == 4)
 						control.openLink(new String(passwordField.getPassword()));
 					
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					new EcranErreur(e.getMessage()).setVisible(true);
+					return;
 				}
 			}
 		});

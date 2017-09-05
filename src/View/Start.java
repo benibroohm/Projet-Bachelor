@@ -31,6 +31,12 @@ import javax.swing.border.MatteBorder;
 import Controller.ControleurSaisie;
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * Fenêtre principale.
+ * 
+ * @author Beni Broohm
+ *
+ */
 public class Start extends JFrame {
 	/**
 	 * 
@@ -242,15 +248,22 @@ public class Start extends JFrame {
 		mnOutils.add(mntmRafraichir);
 	}
 	
+	/**
+	 * Setter pour le controleur.
+	 * 
+	 * @param control
+	 */
 	public void setControleur(ControleurSaisie control) {
 		this.control = control;
 	}
 	
+	/**
+	 * Fonction pour le rafraîchissement de la fenêtre principale.
+	 */
 	public void refreshUI() {
 		this.scrollPane.setViewportView(control.getTable());
 		this.scrollPane.getViewport().revalidate();
 		this.scrollPane.revalidate();
-	
 		control.reorderIndex();
 	}
 }
