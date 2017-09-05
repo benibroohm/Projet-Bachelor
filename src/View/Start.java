@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.Vector;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -136,7 +135,6 @@ public class Start extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				control.addC(1);
-				refreshUI();
 			}
 		});
 		
@@ -168,7 +166,7 @@ public class Start extends JFrame {
 		btnLigne.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				removeRows();
+				control.removeRows();
 			}
 		});
 		panel.add(btnLigne, "cell 0 3,growx");
@@ -213,9 +211,6 @@ public class Start extends JFrame {
 		mnFichier.add(mntmEnregistrerSous);
 		mntmEnregistrerSous.addActionListener(new SaveL(this, control));
 		
-		JMenuItem mntmQuitter = new JMenuItem("Quitter");
-		mnFichier.add(mntmQuitter);
-		
 		JMenu mnDonnes = new JMenu("Donn\u00E9es");
 		menuBar.add(mnDonnes);
 		
@@ -241,15 +236,12 @@ public class Start extends JFrame {
 		JMenuItem mntmRafraichir = new JMenuItem("Rafraichir");
 		mntmRafraichir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//updateTable(control.getTable());
 				refreshUI();
 			}
 		});
 		mnOutils.add(mntmRafraichir);
 	}
-	public ControleurSaisie getControleur() {
-		return control;
-	}
+	
 	public void setControleur(ControleurSaisie control) {
 		this.control = control;
 	}
@@ -259,11 +251,6 @@ public class Start extends JFrame {
 		this.scrollPane.getViewport().revalidate();
 		this.scrollPane.revalidate();
 	
-		Vector titre = (Vector) control.getModel().getDataVector().get(0);
-		control.getModel().setColumnIdentifiers(titre);
-	}
-	
-	public void removeRows() {
-		this.control.removeRows();
+		control.reorderIndex();
 	}
 }

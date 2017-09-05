@@ -16,6 +16,12 @@ import javax.swing.SpringLayout;
 
 import Controller.ControleurSaisie;
 
+/**
+ * Interface responsable de présenter un résumé des colonnes à supprimer.
+ * 
+ * @author Beni Broohm
+ *
+ */
 public class EcranAnonymisation extends JDialog {
 	/**
 	 * 
@@ -70,11 +76,14 @@ public class EcranAnonymisation extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int option = 0;
+				// On anonymise selon l'option :
+				// 1- pseudonymisation
+				// 2- k-anonymisation
 				if (rdbtnPseudonymisation.isSelected())
 					option = 1;
 				if (rdbtnKanonymisation.isSelected())
 					option = 2;
-				control.anonymize(control.getSelected(), option);
+				control.anonymize(control.getSelected(), option); // On anonymise.
 				dispose();
 			}
 		});

@@ -71,9 +71,6 @@ public class FenetreCrypto extends JDialog {
 					else if (option == 3) {
 						try {
 							control.saveLink(new String(passwordField.getPassword()));
-						} catch (InvalidKeyException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						} catch (NoSuchAlgorithmException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

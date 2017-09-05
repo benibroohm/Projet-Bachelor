@@ -1,3 +1,13 @@
+/**
+ * Program.java : programme principal qui démarre l'ensemble de l'application
+ * 
+ * @author Beni Broohm
+ * @version 1.0 - Init
+ * @depuis 5/09/2017
+ * 
+ * Cette classe crée un Thread spécial pour l'exécution de l'UI
+ */
+
 package Controller;
 
 import javax.swing.SwingUtilities;
