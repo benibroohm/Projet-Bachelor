@@ -16,24 +16,25 @@ public class SaveR implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		JFileChooser c;
-		if (control.isPathSet()) {
-			c = new JFileChooser(new File(control.getFolderPath()+"/Correspondances"));
-		}
-		else
-			c = new JFileChooser();
-		// Demonstrate "Save" dialog:
-		int rVal = c.showSaveDialog(this.st);
-		
-		if (rVal == JFileChooser.APPROVE_OPTION) {
-			control.getFilename().setText(c.getSelectedFile().getName());
-			control.getDir().setText(c.getCurrentDirectory().toString());
-			control.launchKeyGet(3);
-		}
-		if (rVal == JFileChooser.CANCEL_OPTION) {
-			control.getFilename().setText("You pressed cancel");
-			control.getDir().setText("");
+		if (control.isPseudo()) {
+			JFileChooser c;
+			if (control.isPathSet()) {
+				c = new JFileChooser(new File(control.getFolderPath()+"/Correspondances"));
+			}
+			else
+				c = new JFileChooser();
+			// Demonstrate "Save" dialog:
+			int rVal = c.showSaveDialog(this.st);
+
+			if (rVal == JFileChooser.APPROVE_OPTION) {
+				control.getFilename().setText(c.getSelectedFile().getName());
+				control.getDir().setText(c.getCurrentDirectory().toString());
+				control.launchKeyGet(3);
+			}
+			if (rVal == JFileChooser.CANCEL_OPTION) {
+				control.getFilename().setText("You pressed cancel");
+				control.getDir().setText("");
+			}
 		}
 	}
 	
