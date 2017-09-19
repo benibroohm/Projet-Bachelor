@@ -50,6 +50,7 @@ import View.EcranErreur;
 import View.EcranNombre;
 import View.EcranSelectionColonne;
 import View.FenetreCrypto;
+import View.SaveR;
 import View.Start;
 
 public class ControleurSaisie {
@@ -110,8 +111,7 @@ public class ControleurSaisie {
 	 * Affiche une interface pour permettre au chercheur de créer une nouvelle table
 	 */
 	public void launchChoice() {
-		EcranChoixTableau choice = new EcranChoixTableau(this);
-		choice.setVisible(true);
+		new EcranChoixTableau(this).setVisible(true);
 	}
 
 	/**
@@ -119,8 +119,7 @@ public class ControleurSaisie {
 	 * @param choix
 	 */
 	public void launchAjout(String choix) {
-		EcranNombre nombre = new EcranNombre(this, choix);
-		nombre.setVisible(true);
+		new EcranNombre(this, choix).setVisible(true);
 	}
 
 	/**
@@ -257,8 +256,7 @@ public class ControleurSaisie {
 				}
 			}
 			// On présente après les colonnes choisies
-			EcranSelectionColonne choice = new EcranSelectionColonne(objets, this);
-			choice.setVisible(true);
+			new EcranSelectionColonne(objets, this).setVisible(true);
 		}
 	}
 
@@ -385,6 +383,7 @@ public class ControleurSaisie {
 		} catch (IOException e) {
 			new EcranErreur(e.getMessage()).setVisible(true);
 		}
+		new SaveR(this.fenetre, this).actionPerformed(null);
 	}
 
 	/**

@@ -232,10 +232,6 @@ public class Start extends JFrame {
 		mnDonnes.add(mntmOuvrirCorrespondances);
 		mntmOuvrirCorrespondances.addActionListener(new OpenR(this, control));
 		
-		JMenuItem mntmCrerCorrespondances = new JMenuItem("Cr\u00E9er correspondances");
-		mnDonnes.add(mntmCrerCorrespondances);
-		mntmCrerCorrespondances.addActionListener(new SaveR(this, control));
-		
 		JMenu mnOutils = new JMenu("Outils");
 		menuBar.add(mnOutils);
 		
